@@ -5,7 +5,11 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/Thumbs.db": true
+        "**/Thumbs.db": true,
+        "*/*.freezed.dart": true,
+        "lib/domain/auth/core/failures.freezed.dart": true
     },
-    "hide-files.files": []
+    "hide-files.files": [
+        "*/*.freezed.dart",
+    ]
 }
