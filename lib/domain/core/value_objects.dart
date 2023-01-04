@@ -1,19 +1,37 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:starter_template/domain/core/common_interfaces.dart';
 import 'package:starter_template/domain/core/errors.dart';
+import 'package:starter_template/domain/core/value_validators.dart';
+import 'package:uuid/uuid.dart';
 
 import 'failures.dart';
 
 @immutable
-abstract class ValueObject<T> {
+abstract class ValueObject<T> implements IValidatable {
   const ValueObject();
   Either<ValueFailure<T>, T> get value;
 
-  bool isValid() => value.isRight();
-
+  /// Throws [UnexpectedValueError] containing the [ValueFailure]
   T getOrCrash() {
     // id = identity - same as writing (right) => right
     return value.fold((f) => throw UnexpectedValueError(f), id);
+  }
+
+  T getOrElse(T dflt) {
+    return value.getOrElse(() => dflt);
+  }
+
+  Either<ValueFailure<dynamic>, Unit> get failureOrUnit {
+    return value.fold(
+      (l) => left(l),
+      (r) => right(unit),
+    );
+  }
+
+  @override
+  bool isValid() {
+    return value.isRight();
   }
 
   @override
@@ -27,4 +45,38 @@ abstract class ValueObject<T> {
 
   @override
   String toString() => 'Value($value)';
+}
+
+class UniqueId extends ValueObject<String> {
+  @override
+  final Either<ValueFailure<String>, String> value;
+
+  factory UniqueId() {
+    return UniqueId._(
+      right(const Uuid().v1()),
+    );
+  }
+
+  /// Used with strings we trust are unique, such as database IDs.
+  factory UniqueId.fromUniqueString(String uniqueIdStr) {
+    return UniqueId._(
+      right(uniqueIdStr),
+    );
+  }
+
+  const UniqueId._(this.value);
+}
+
+class StringSingleLine extends ValueObject<String> {
+  @override
+  final Either<ValueFailure<String>, String> value;
+
+  factory StringSingleLine(String input) {
+    assert(input != null);
+    return StringSingleLine._(
+      validateSingleLine(input),
+    );
+  }
+
+  const StringSingleLine._(this.value);
 }

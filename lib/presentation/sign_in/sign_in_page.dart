@@ -18,7 +18,7 @@ class SignInPage extends StatelessWidget {
         builder:
             (BuildContext context, AsyncSnapshot<SignInFormBloc> snapshot) {
           if (!snapshot.hasData) {
-            return Text("not loading yet");
+            return const CircularProgressIndicator();
           }
           return BlocProvider<SignInFormBloc>(
             create: (context) => snapshot.data!,

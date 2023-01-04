@@ -29,6 +29,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  auto_route: ^5.0.4
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
   flutter:
@@ -38,8 +39,10 @@ dependencies:
   get_it: ^7.2.0
   injectable: ^2.1.0
   shared_preferences: ^2.0.15
+  uuid: ^3.0.7
 
 dev_dependencies:
+  auto_route_generator: ^5.0.3
   build_runner: ^2.3.3
   flutter_lints: ^2.0.0
   flutter_test:

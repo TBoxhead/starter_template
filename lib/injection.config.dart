@@ -8,13 +8,14 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:shared_preferences/shared_preferences.dart' as _i3;
+import 'package:starter_template/application/auth/auth_bloc.dart' as _i7;
 import 'package:starter_template/application/auth/sign_in_form/sign_in_form_bloc.dart'
     as _i6;
 import 'package:starter_template/domain/auth/i_auth_facade.dart' as _i4;
 import 'package:starter_template/infrastructure/auth/local_auth_facade.dart'
     as _i5;
 import 'package:starter_template/infrastructure/core/local_injectable_module.dart'
-    as _i7;
+    as _i8;
 
 /// ignore_for_file: unnecessary_lambdas
 /// ignore_for_file: lines_longer_than_80_chars
@@ -35,8 +36,10 @@ extension GetItInjectableX on _i1.GetIt {
         _i5.LocalAuthFacade(await getAsync<_i3.SharedPreferences>()));
     gh.factoryAsync<_i6.SignInFormBloc>(
         () async => _i6.SignInFormBloc(await getAsync<_i4.IAuthFacade>()));
+    gh.factoryAsync<_i7.AuthBloc>(
+        () async => _i7.AuthBloc(await getAsync<_i4.IAuthFacade>()));
     return this;
   }
 }
 
-class _$RegisterModules extends _i7.RegisterModules {}
+class _$RegisterModules extends _i8.RegisterModules {}

@@ -1,6 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:starter_template/application/auth/auth_bloc.dart';
 import 'package:starter_template/application/auth/sign_in_form/sign_in_form_bloc.dart';
+import 'package:starter_template/presentation/routes/router.gr.dart';
 
 class SignInForm extends StatelessWidget {
   const SignInForm({super.key});
@@ -8,7 +11,26 @@ class SignInForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SignInFormBloc, SignInFormState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        state.authFailureOrSuccessOption.fold(
+            () => {},
+            (a) => a.fold((l) {
+                  var snackBar = SnackBar(
+                    content: Text(l.map(
+                        serverError: (_) => "Server Error",
+                        emailAlreadyInUse: (_) => "Email Already In Use",
+                        invalidEmailAndPasswordCombination: (_) =>
+                            "Invalid Email And Password Combination")),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }, (r) {
+                  context.router.replaceNamed(const MainRoute().path);
+                  context
+                      .read<AuthBloc>()
+                      .add(const AuthEvent.authCheckRequested());
+                }));
+      },
       builder: (context, state) {
         return Form(
           autovalidateMode: AutovalidateMode.onUserInteraction,

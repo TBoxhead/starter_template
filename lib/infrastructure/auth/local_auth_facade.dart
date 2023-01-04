@@ -3,8 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:starter_template/domain/auth/auth_failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:starter_template/domain/auth/i_auth_facade.dart';
+import 'package:starter_template/domain/auth/user.dart';
 import 'package:starter_template/domain/auth/value_objects.dart';
 import 'package:starter_template/domain/core/errors.dart';
+import 'package:starter_template/domain/core/value_objects.dart';
+import 'package:uuid/uuid.dart';
 
 @Injectable(as: IAuthFacade)
 class LocalAuthFacade implements IAuthFacade {
@@ -21,7 +24,7 @@ class LocalAuthFacade implements IAuthFacade {
       String? savedEmail = sharedPreferences.getString("email");
 
       if (savedEmail != null && savedEmail == inputEmail) {
-        left(const AuthFailure.emailAlreadyInUse());
+        return left(const AuthFailure.emailAlreadyInUse());
       }
 
       sharedPreferences.setString("email", inputEmail);
@@ -56,5 +59,32 @@ class LocalAuthFacade implements IAuthFacade {
   Future<Either<AuthFailure, Unit>> signInWithGoogle() async {
     sharedPreferences.setBool("isLoggedIn", true);
     return right(unit);
+  }
+
+  @override
+  Future<Option<User>> getSignedInUser() async {
+    var isLoggedIn = sharedPreferences.getBool("isLoggedIn");
+
+    if (isLoggedIn == null) {
+      return optionOf(null);
+    }
+
+    if (!isLoggedIn) {
+      return optionOf(null);
+    }
+
+    var emailAddress = sharedPreferences.getString("email");
+    emailAddress = isLoggedIn && emailAddress != null
+        ? emailAddress
+        : "googleAccount@google.com";
+    return optionOf(User(
+        id: UniqueId(),
+        name: StringSingleLine(emailAddress.split("@")[0]),
+        emailAddress: EmailAddress(emailAddress)));
+  }
+
+  @override
+  Future<void> signOut() async {
+    sharedPreferences.setBool("isLoggedIn", false);
   }
 }

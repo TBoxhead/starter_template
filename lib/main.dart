@@ -4,5 +4,5 @@ import 'package:starter_template/presentation/core/app_widget.dart';
 
 void main() {
   configureDependencies();
-  runApp(const AppWidget());
+  runApp(AppWidget());
 }
